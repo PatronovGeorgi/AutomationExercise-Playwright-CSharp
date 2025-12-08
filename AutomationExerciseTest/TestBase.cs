@@ -206,7 +206,7 @@ namespace AutomationExerciseTest
         {
             var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
             var random = new Random().Next(1000, 9999);
-            return $"testuser_{timestamp}_{random}@example.com";
+            return $"testuser_{timestamp}_{random}@mailinator.com";
         }
 
         /// <summary>
