@@ -5,170 +5,147 @@ namespace AutomationExerciseTest.Pages
     public class ProductsPage : BasePage
     {
         // ========================================
-        // PRODUCT INFORMATION LOCATORS
+        // PAGE ELEMENTS LOCATORS
         // ========================================
-        private readonly string _productName = ".product-information h2";
-        private readonly string _productCategory = ".product-information p:has-text('Category:')";
-        private readonly string _productPrice = ".product-information span span";
-        private readonly string _productAvailability = ".product-information p:has-text('Availability:')";
-        private readonly string _productCondition = ".product-information p:has-text('Condition:')";
-        private readonly string _productBrand = ".product-information p:has-text('Brand:')";
+        private readonly string _allProductsHeader = "h2.title.text-center";
+        private readonly string _productsList = ".features_items";
+        private readonly string _productItem = ".product-image-wrapper";
+        private readonly string _productName = ".productinfo p";
+        private readonly string _productPrice = ".productinfo h2";
 
         // ========================================
-        // PRODUCT IMAGES
+        // SEARCH LOCATORS
         // ========================================
-        private readonly string _productMainImage = ".view-product img";
-        private readonly string _productThumbnails = ".product-image-wrapper img";
+        private readonly string _searchInput = "input#search_product";
+        private readonly string _searchButton = "button#submit_search";
+        private readonly string _searchedProductsHeader = "h2.title.text-center";
 
         // ========================================
-        // QUANTITY AND ADD TO CART
+        // PRODUCT INTERACTION LOCATORS
         // ========================================
-        private readonly string _quantityInput = "input#quantity";
-        private readonly string _addToCartButton = "button.btn.btn-default.cart";
+        private readonly string _viewProductButton = "a[href*='/product_details/']";
+        private readonly string _addToCartButton = ".btn.btn-default.add-to-cart";
         private readonly string _continueShoppingButton = "button.btn.btn-success";
         private readonly string _viewCartLink = "text=View Cart";
-
-        // ========================================
-        // REVIEW SECTION
-        // ========================================
-        private readonly string _writeReviewHeading = "a[href='#reviews']";
-        private readonly string _reviewNameInput = "input#name";
-        private readonly string _reviewEmailInput = "input#email";
-        private readonly string _reviewTextarea = "textarea#review";
-        private readonly string _submitReviewButton = "button#button-review";
-        private readonly string _reviewSuccessMessage = ".alert-success.alert";
 
         // Constructor
         public ProductsPage(IPage page) : base(page) { }
 
         // ========================================
-        // VERIFICATION METHODS
+        // NAVIGATION & PAGE VERIFICATION
         // ========================================
 
-        public async Task<bool> IsProductDetailsVisible()
+        public async Task<bool> IsAllProductsPageVisible()
         {
-            return await IsElementVisible(_productName);
+            return await IsElementVisible(_allProductsHeader);
         }
 
-        public async Task<bool> AreAllProductDetailsVisible()
+        public async Task<string> GetPageTitle()
         {
-            bool nameVisible = await IsElementVisible(_productName);
-            bool categoryVisible = await IsElementVisible(_productCategory);
-            bool priceVisible = await IsElementVisible(_productPrice);
-            bool availabilityVisible = await IsElementVisible(_productAvailability);
-            bool conditionVisible = await IsElementVisible(_productCondition);
-            bool brandVisible = await IsElementVisible(_productBrand);
+            var titleElement = Page.Locator(_allProductsHeader).First;
+            return await titleElement.TextContentAsync() ?? string.Empty;
+        }
 
-            return nameVisible && categoryVisible && priceVisible &&
-                   availabilityVisible && conditionVisible && brandVisible;
+        public async Task<int> GetProductsCount()
+        {
+            return await Page.Locator(_productItem).CountAsync();
         }
 
         // ========================================
-        // GET PRODUCT INFORMATION
+        // SEARCH FUNCTIONALITY
         // ========================================
 
-        public async Task<string> GetProductName()
+        public async Task SearchProduct(string productName)
         {
-            return await Page.Locator(_productName).TextContentAsync() ?? string.Empty;
+            await FillInput(_searchInput, productName);
+            await ClickElement(_searchButton);
+            await Task.Delay(1000);
         }
 
-        public async Task<string> GetProductCategory()
+        public async Task<bool> IsSearchResultsVisible()
         {
-            var fullText = await Page.Locator(_productCategory).TextContentAsync();
-            // "Category: Women > Tops" -> return full text
-            return fullText?.Trim() ?? string.Empty;
+            return await IsElementVisible(_productsList);
         }
 
-        public async Task<string> GetProductPrice()
+        public async Task<string> GetSearchedProductsHeaderText()
         {
-            return await Page.Locator(_productPrice).TextContentAsync() ?? string.Empty;
+            return await Page.Locator(_searchedProductsHeader).TextContentAsync() ?? string.Empty;
         }
 
-        public async Task<string> GetProductAvailability()
+        public async Task<List<string>> GetProductNames()
         {
-            var fullText = await Page.Locator(_productAvailability).TextContentAsync();
-            // "Availability: In Stock" -> return "In Stock"
-            return fullText?.Replace("Availability:", "").Trim() ?? string.Empty;
+            var products = await Page.Locator(_productName).AllTextContentsAsync();
+            return products.Select(p => p.Trim()).ToList();
         }
 
-        public async Task<string> GetProductCondition()
+        public async Task<bool> IsProductInSearchResults(string productName)
         {
-            var fullText = await Page.Locator(_productCondition).TextContentAsync();
-            // "Condition: New" -> return "New"
-            return fullText?.Replace("Condition:", "").Trim() ?? string.Empty;
+            var productNames = await GetProductNames();
+            return productNames.Any(p => p.Contains(productName, StringComparison.OrdinalIgnoreCase));
         }
 
-        public async Task<string> GetProductBrand()
+        // ========================================
+        // PRODUCT INTERACTION
+        // ========================================
+
+        public async Task ClickViewProductByIndex(int index = 0)
         {
-            var fullText = await Page.Locator(_productBrand).TextContentAsync();
-            // "Brand: Polo" -> return "Polo"
-            return fullText?.Replace("Brand:", "").Trim() ?? string.Empty;
+            await Page.Locator(_viewProductButton).Nth(index).ClickAsync();
+            await Task.Delay(1000);
         }
 
-        /// <summary>
-        /// Връща всички product details като Dictionary
-        /// </summary>
-        public async Task<Dictionary<string, string>> GetAllProductDetails()
+        public async Task ClickViewProductByName(string productName)
         {
-            return new Dictionary<string, string>
+            var productWrapper = Page.Locator(_productItem)
+                .Filter(new() { HasText = productName });
+
+            await productWrapper.Locator(_viewProductButton).First.ClickAsync();
+            await Task.Delay(1000);
+        }
+
+        public async Task AddProductToCartByIndex(int index = 0)
+        {
+            var product = Page.Locator(_productItem).Nth(index);
+            await product.HoverAsync();
+            await Task.Delay(500);
+
+            // Use First to avoid multiple elements error
+            await product.Locator(_addToCartButton).First.ClickAsync();
+            await Task.Delay(1000);
+        }
+
+        public async Task AddProductToCartByName(string productName)
+        {
+            var productWrapper = Page.Locator(_productItem)
+                .Filter(new() { HasText = productName });
+
+            await productWrapper.HoverAsync();
+            await Task.Delay(500);
+
+            await productWrapper.Locator(_addToCartButton).ClickAsync();
+            await Task.Delay(1000);
+        }
+
+        public async Task AddMultipleProductsToCart(int count)
+        {
+            for (int i = 0; i < count; i++)
             {
-                { "Name", await GetProductName() },
-                { "Category", await GetProductCategory() },
-                { "Price", await GetProductPrice() },
-                { "Availability", await GetProductAvailability() },
-                { "Condition", await GetProductCondition() },
-                { "Brand", await GetProductBrand() }
-            };
+                await AddProductToCartByIndex(i);
+                await ClickContinueShopping();
+                await Task.Delay(500);
+            }
         }
 
         // ========================================
-        // QUANTITY AND CART ACTIONS
+        // MODAL ACTIONS
         // ========================================
-
-        public async Task<string> GetCurrentQuantity()
-        {
-            return await Page.Locator(_quantityInput).InputValueAsync();
-        }
-
-        /// <summary>
-        /// Изчиства и въвежда нова количество
-        /// </summary>
-        public async Task SetQuantity(string quantity)
-        {
-            await Page.Locator(_quantityInput).ClearAsync();
-            await Page.FillAsync(_quantityInput, quantity);
-        }
-
-        /// <summary>
-        /// Увеличава quantity с определен брой
-        /// </summary>
-        public async Task IncreaseQuantity(int amount)
-        {
-            string currentQty = await GetCurrentQuantity();
-            int newQty = int.Parse(currentQty) + amount;
-            await SetQuantity(newQty.ToString());
-        }
-
-        public async Task ClickAddToCart()
-        {
-            await ClickElement(_addToCartButton);
-            await Task.Delay(1000); // Wait for modal
-        }
-
-        /// <summary>
-        /// Добавя продукт с конкретно quantity
-        /// </summary>
-        public async Task AddProductWithQuantity(string quantity)
-        {
-            await SetQuantity(quantity);
-            await ClickAddToCart();
-        }
 
         public async Task ClickContinueShopping()
         {
             if (await IsElementVisible(_continueShoppingButton, timeout: 3000))
             {
                 await ClickElement(_continueShoppingButton);
+                await Task.Delay(500);
             }
         }
 
@@ -179,83 +156,50 @@ namespace AutomationExerciseTest.Pages
         }
 
         // ========================================
-        // REVIEW FUNCTIONALITY
+        // PRODUCT DETAILS RETRIEVAL
         // ========================================
 
-        public async Task ClickWriteReview()
+        public async Task<string> GetProductPriceByIndex(int index)
         {
-            await Page.ClickAsync(_writeReviewHeading);
-            await Task.Delay(500);
+            var price = await Page.Locator(_productPrice).Nth(index).TextContentAsync();
+            return price?.Trim() ?? string.Empty;
         }
 
-        public async Task EnterReviewName(string name)
+        public async Task<string> GetProductNameByIndex(int index)
         {
-            await FillInput(_reviewNameInput, name);
+            var name = await Page.Locator(_productName).Nth(index).TextContentAsync();
+            return name?.Trim() ?? string.Empty;
         }
 
-        public async Task EnterReviewEmail(string email)
+        public async Task<bool> DoAllProductsHavePrice()
         {
-            await FillInput(_reviewEmailInput, email);
+            int productsCount = await GetProductsCount();
+            int pricesCount = await Page.Locator(_productPrice).CountAsync();
+
+            return productsCount == pricesCount && productsCount > 0;
         }
 
-        public async Task EnterReviewText(string review)
+        public async Task<bool> DoAllProductsHaveViewButton()
         {
-            await FillInput(_reviewTextarea, review);
-        }
+            int productsCount = await GetProductsCount();
+            int buttonsCount = await Page.Locator(_viewProductButton).CountAsync();
 
-        public async Task ClickSubmitReview()
-        {
-            await ClickElement(_submitReviewButton);
-            await Task.Delay(1000);
-        }
-
-        /// <summary>
-        /// Попълва и изпраща review с един метод
-        /// </summary>
-        public async Task WriteReview(string name, string email, string review)
-        {
-            await ClickWriteReview();
-            await EnterReviewName(name);
-            await EnterReviewEmail(email);
-            await EnterReviewText(review);
-            await ClickSubmitReview();
-        }
-
-        public async Task<bool> IsReviewSuccessMessageVisible()
-        {
-            return await IsElementVisible(_reviewSuccessMessage);
-        }
-
-        public async Task<string> GetReviewSuccessMessage()
-        {
-            if (await IsReviewSuccessMessageVisible())
-            {
-                return await Page.Locator(_reviewSuccessMessage).TextContentAsync() ?? string.Empty;
-            }
-            return string.Empty;
+            return productsCount == buttonsCount && productsCount > 0;
         }
 
         // ========================================
-        // IMAGE VERIFICATION
+        // UTILITY METHODS
         // ========================================
 
-        public async Task<bool> IsProductImageVisible()
+        public async Task ScrollToProduct(int index)
         {
-            return await IsElementVisible(_productMainImage);
+            await Page.Locator(_productItem).Nth(index).ScrollIntoViewIfNeededAsync();
+            await Task.Delay(300);
         }
 
-        public async Task<int> GetProductImagesCount()
+        public async Task ClearSearchInput()
         {
-            return await Page.Locator(_productThumbnails).CountAsync();
-        }
-
-        /// <summary>
-        /// Проверява дали product има поне едно изображение
-        /// </summary>
-        public async Task<bool> HasProductImages()
-        {
-            int count = await GetProductImagesCount();
-            return count > 0;
+            await Page.Locator(_searchInput).ClearAsync();
         }
     }
 }
