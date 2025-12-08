@@ -32,7 +32,7 @@ namespace AutomationExerciseTest.Tests
             await Wait(2000);
 
             // Verify - Contact Us page loaded
-            string pageTitle = await _page.Locator("h2.title.text-center").TextContentAsync();
+            string pageTitle = await _page.Locator(".contact-form h2.title.text-center").First.TextContentAsync();
             Assert.That(pageTitle, Does.Contain("GET IN TOUCH").IgnoreCase,
                 "Contact Us page title should be visible");
 
