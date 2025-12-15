@@ -86,16 +86,29 @@ namespace AutomationExerciseTest.Tests
             await HomePage.ClickProducts();
             await Wait(2000);
 
-            // Add 2 products
+            // Add first product
             string firstProduct = await ProductsPage.GetProductNameByIndex(0);
-            string secondProduct = await ProductsPage.GetProductNameByIndex(1);
-
             await ProductsPage.AddProductToCartByIndex(0);
-            await ProductsPage.ClickContinueShopping();
-            await Wait(500);
+            await Wait(2000);
 
+            // Click continue shopping if modal appears
+            try
+            {
+                await _page.ClickAsync("button.btn.btn-success", new() { Timeout = 3000 });
+                await Wait(1000);
+            }
+            catch
+            {
+                Console.WriteLine("Continue shopping button not found");
+            }
+
+            // Add second product
+            string secondProduct = await ProductsPage.GetProductNameByIndex(1);
             await ProductsPage.AddProductToCartByIndex(1);
-            await ProductsPage.ClickViewCart();
+            await Wait(2000);
+
+            // Click view cart
+            await _page.ClickAsync("text=View Cart");
             await Wait(2000);
 
             // Verify both products are in cart
