@@ -1,0 +1,605 @@
+{
+  "info": {
+    "_postman_id": "e82a32a2-2f51-40fc-905f-b96c78098b47",
+    "name": "AutomationExercise API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "3914484"
+  },
+  "item": [
+    {
+      "name": "TC01 - GET All Products - Status 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response contains products list\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.products).to.be.an('array');\r",
+              "    pm.expect(jsonData.products.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/productsList",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "productsList"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC03 - POST Products List - Method Not Supported",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response message says method not supported\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.include(\"not supported\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/productsList",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "productsList"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC04 - GET All Brands - Status 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response contains brands list\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.brands).to.be.an('array');\r",
+              "    pm.expect(jsonData.brands.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}//api/brandsList",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "",
+            "api",
+            "brandsList"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC06 - POST Search Product - Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Search returns products\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.products).to.be.an('array');\r",
+              "    pm.expect(jsonData.products.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "search_product",
+              "value": "tshirt",
+              "type": "text",
+              "uuid": "981fee5a-c140-432f-828e-ff6f93397070"
+            },
+            {
+              "key": "",
+              "value": "",
+              "type": "text",
+              "uuid": "d717d4a4-2de0-4519-bde5-f76ead79fb85"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/searchProduct",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "searchProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC07 - POST Search Product - Missing Parameter",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Missing parameter returns error message\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.include(\"missing\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/searchProduct",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "searchProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC08 - POST Verify Login - Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"User exists message\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.equal(\"User exists!\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "usermc2@ttyls.com",
+              "type": "text",
+              "uuid": "797fc075-cf7c-45e6-b2c7-a38c9fc879b8"
+            },
+            {
+              "key": "password",
+              "value": "QWERTZ!",
+              "type": "text",
+              "uuid": "6aa33c71-8507-4edb-be1d-c1a59ea3763d"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/verifyLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "verifyLogin"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC09 - POST Verify Login - Invalid Credentials",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Invalid user returns correct message\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.include(\"not found\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "wrong@test.com",
+              "type": "text",
+              "uuid": "9a78992e-7f35-4686-b025-5278f948ef75"
+            },
+            {
+              "key": "password",
+              "value": "wrongpass",
+              "type": "text",
+              "uuid": "a078b17c-581d-4a27-bcea-88ec54027d03"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/verifyLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "verifyLogin"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC10 - POST Verify Login - Missing Email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Missing email returns bad request message\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.include(\"missing\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "password",
+              "value": "test123",
+              "type": "text",
+              "uuid": "1a747e5b-4f93-438a-b65e-80360b3df3df"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/verifyLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "verifyLogin"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC11 - POST Create Account - Valid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"randomEmail\", \"user_\" + Date.now() + \"@test.com\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Account created successfully\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.equal(\"User created!\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Test User",
+              "type": "text",
+              "uuid": "b89b85a6-3899-4d73-8fd3-8a11cd0dc7b8"
+            },
+            {
+              "key": "email",
+              "value": "{{randomEmail}}",
+              "type": "text",
+              "uuid": "21a22c2f-55be-4b38-82a0-3286537aff5f"
+            },
+            {
+              "key": "password",
+              "value": "test123",
+              "type": "text",
+              "uuid": "b0c1f5bb-82b1-4100-ba62-f8f41ca4e8c9"
+            },
+            {
+              "key": "title",
+              "value": "Mr",
+              "type": "text",
+              "uuid": "bf86a212-5ea4-4291-9a4a-4dd3bee64827"
+            },
+            {
+              "key": "birth_date",
+              "value": "1",
+              "type": "text",
+              "uuid": "a274347c-3d84-4d36-86d2-b5fa915a7b7a"
+            },
+            {
+              "key": "birth_month",
+              "value": "1",
+              "type": "text",
+              "uuid": "523d1b30-4f4d-439a-a68d-681c6be5f8c6"
+            },
+            {
+              "key": "birth_year",
+              "value": "1990",
+              "type": "text",
+              "uuid": "2e19f690-9f20-4c6c-bed7-083415df7e0c"
+            },
+            {
+              "key": "firstname",
+              "value": "Test",
+              "type": "text",
+              "uuid": "e7b9c849-dc28-494f-b198-48992c4060b6"
+            },
+            {
+              "key": "lastname",
+              "value": "User",
+              "type": "text",
+              "uuid": "37b010b4-c858-4d26-b385-b3f4c0490f90"
+            },
+            {
+              "key": "company",
+              "value": "TestCo",
+              "type": "text",
+              "uuid": "b288d135-29c6-45ab-b423-0c933ae7c3a4"
+            },
+            {
+              "key": "address1",
+              "value": "123 Test St",
+              "type": "text",
+              "uuid": "0515dc12-4698-44d6-a849-1b02e5abdb90"
+            },
+            {
+              "key": "country",
+              "value": "Bulgaria",
+              "type": "text",
+              "uuid": "50ce61a0-69c2-403c-b72a-97754c871f11"
+            },
+            {
+              "key": "zipcode",
+              "value": "1000",
+              "type": "text",
+              "uuid": "caeb3536-8bee-4717-9dd2-8a814b6b78f5"
+            },
+            {
+              "key": "state",
+              "value": "Sofia",
+              "type": "text",
+              "uuid": "3758880b-5fae-4a4f-a592-7adc06d46539"
+            },
+            {
+              "key": "city",
+              "value": "Sofia",
+              "type": "text",
+              "uuid": "94ae752e-c61e-414a-b621-8b14c23e658b"
+            },
+            {
+              "key": "mobile_number",
+              "value": "0888123456",
+              "type": "text",
+              "uuid": "b5f75385-33f2-473a-8227-f1b5c25408db"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/createAccount",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "createAccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC12 - DELETE Account",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Account deleted successfully\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.equal(\"Account deleted!\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "{{randomEmail}}",
+              "type": "text",
+              "uuid": "aec24b01-f76e-41ea-9bc9-9685ff6420a6"
+            },
+            {
+              "key": "password",
+              "value": "test123",
+              "type": "text",
+              "uuid": "6df4cbd0-1d32-405f-b581-fe35332706b7"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/deleteAccount",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "deleteAccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC13 - GET User by Email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response contains user data\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.user).to.exist;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/getUserDetailByEmail?email=test@gmail.com",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "getUserDetailByEmail"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "test@gmail.com"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
